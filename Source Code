@@ -1,0 +1,45 @@
+# Step 1: Install dependencies (if needed, typically already available in Colab)
+import pandas as pd
+import matplotlib.pyplot as plt
+from google.colab import files
+
+# Step 2: Upload the CSV file manually
+uploaded = files.upload()
+
+# Step 3: Load the uploaded file into a DataFrame
+filename = list(uploaded.keys())[0]
+df = pd.read_csv(filename)
+
+# Step 4: Display the first few rows
+print("Preview of Uploaded Data:")
+display(df.head())
+
+# Step 5: Group by emotion and compute statistics
+emotion_counts = df['Detected Emotion'].value_counts().reset_index()
+emotion_counts.columns = ['Detected Emotion', 'Count']
+
+average_sentiment = df.groupby('Detected Emotion')['Sentiment Score'].mean().reset_index()
+average_sentiment.columns = ['Detected Emotion', 'Average Sentiment Score']
+
+# Merge both results
+summary_df = pd.merge(emotion_counts, average_sentiment, on='Detected Emotion')
+print("Summary:")
+display(summary_df)
+
+# Step 6: Plot - Count of Detected Emotions
+plt.figure(figsize=(8, 5))
+plt.bar(summary_df['Detected Emotion'], summary_df['Count'], color='skyblue')
+plt.title('Count of Detected Emotions')
+plt.xlabel('Emotion')
+plt.ylabel('Count')
+plt.tight_layout()
+plt.show()
+
+# Step 7: Plot - Average Sentiment Score
+plt.figure(figsize=(8, 5))
+plt.bar(summary_df['Detected Emotion'], summary_df['Average Sentiment Score'], color='salmon')
+plt.title('Average Sentiment Score per Emotion')
+plt.xlabel('Emotion')
+plt.ylabel('Average Sentiment Score')
+plt.tight_layout()
+plt.show()
